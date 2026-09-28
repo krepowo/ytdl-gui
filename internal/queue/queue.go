@@ -61,6 +61,9 @@ type Options struct {
 	// OnChange, when set, is called after every mutation (never while holding
 	// the lock, so it may call back into the queue).
 	OnChange func(ChangeEvent)
+	// History, when set, receives finished jobs after every terminal transition
+	// and supplies jobs to Restore. Optional.
+	History *History
 }
 
 // Queue owns every job and schedules them within MaxConcurrent.
@@ -69,6 +72,7 @@ type Queue struct {
 	max      int
 	now      func() time.Time
 	onChange func(ChangeEvent)
+	history  *History
 
 	mu    sync.Mutex
 	jobs  []*Job // insertion order
@@ -76,6 +80,9 @@ type Queue struct {
 	// active counts slots in use by started jobs (a paused job still holds one).
 	active int
 	seq    atomic.Uint64
+	// historyMu serializes snapshot+save so two terminal transitions cannot
+	// interleave and write an older snapshot last.
+	historyMu sync.Mutex
 }
 
 // New creates a Queue. MaxConcurrent below 1 is clamped to 1 so the queue always
@@ -94,6 +101,7 @@ func New(opts Options) *Queue {
 		max:      max,
 		now:      now,
 		onChange: opts.OnChange,
+		history:  opts.History,
 		index:    map[string]*Job{},
 	}
 }
@@ -287,6 +295,7 @@ func (q *Queue) Cancel(id string) error {
 		q.mu.Lock()
 		q.pumpLocked()
 		q.mu.Unlock()
+		q.persistHistory()
 	}
 	q.emit(ChangeEvent{Type: ChangeUpdated, Job: snapshot})
 	return nil
@@ -318,6 +327,70 @@ func (q *Queue) Remove(id string) error {
 
 	q.emit(ChangeEvent{Type: ChangeRemoved, Job: snapshot})
 	return nil
+}
+
+// Restore loads persisted jobs into the queue. Interrupted jobs arrive as
+// `paused` (never auto-started). It is safe to call once at startup; a nil
+// History or a missing file is a no-op.
+func (q *Queue) Restore() error {
+	if q.history == nil {
+		return nil
+	}
+	jobs, err := q.history.Load()
+	if err != nil {
+		return err
+	}
+	if len(jobs) == 0 {
+		return nil
+	}
+
+	q.mu.Lock()
+	for i := range jobs {
+		j := jobs[i]
+		// Rehydrate runtime fields that are not persisted (the request), so a
+		// restored job can be retried/resumed coherently.
+		j.req = DownloadRequest{
+			URL:       j.URL,
+			Mode:      j.Mode,
+			FormatID:  j.FormatID,
+			Title:     j.Title,
+			OutputDir: "",
+		}
+		stored := j
+		q.jobs = append(q.jobs, &stored)
+		q.index[stored.ID] = &stored
+	}
+	q.mu.Unlock()
+
+	// Deliberately do NOT pump: restored jobs must not auto-start.
+	return nil
+}
+
+// snapshotHistoryLocked returns the current jobs for persistence. Callers must
+// hold the lock.
+func (q *Queue) snapshotHistoryLocked() []Job {
+	out := make([]Job, 0, len(q.jobs))
+	for _, j := range q.jobs {
+		out = append(out, j.clone())
+	}
+	return out
+}
+
+// persistHistory writes the current jobs to history. It is called after every
+// terminal transition. historyMu serializes snapshot+save so concurrent terminal
+// transitions cannot write an older snapshot last. Write errors are ignored: a
+// failed history write must never break a download.
+func (q *Queue) persistHistory() {
+	if q.history == nil {
+		return
+	}
+	q.historyMu.Lock()
+	defer q.historyMu.Unlock()
+
+	q.mu.Lock()
+	jobs := q.snapshotHistoryLocked()
+	q.mu.Unlock()
+	_ = q.history.Save(jobs)
 }
 
 // pumpLocked starts queued jobs while slots are free. Callers must hold the lock.
@@ -397,6 +470,7 @@ func (q *Queue) settle(id string, handle EngineJob, err error) {
 	q.pumpLocked()
 	q.mu.Unlock()
 
+	q.persistHistory()
 	q.emit(ChangeEvent{Type: ChangeUpdated, Job: snapshot})
 }
 
