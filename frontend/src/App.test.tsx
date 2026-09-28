@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import App from './App'
 import { renderWithTheme } from './test/renderWithTheme'
@@ -34,6 +35,17 @@ describe('App shell', () => {
     renderWithTheme(<App />)
     expect(screen.getByText(/antrean download/i)).toBeInTheDocument()
     expect(await screen.findByText('Belum ada unduhan.')).toBeInTheDocument()
+  })
+
+  it('opens the settings dialog from the storage bar', async () => {
+    const user = userEvent.setup()
+    renderWithTheme(<App />)
+    await screen.findByRole('button', { name: 'Pengaturan' })
+
+    await user.click(screen.getByRole('button', { name: 'Pengaturan' }))
+
+    expect(await screen.findByText('Pengaturan')).toBeInTheDocument()
+    expect(await screen.findByRole('textbox', { name: 'Folder unduhan' })).toBeInTheDocument()
   })
 })
 

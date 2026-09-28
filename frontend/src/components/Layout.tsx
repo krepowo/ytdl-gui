@@ -4,13 +4,19 @@ import TitleBar from './TitleBar'
 import { tokens } from '../theme/tokens'
 
 /**
- * The app frame: a rounded, frameless window containing the custom title bar and
- * a scrollable content region. Every screen renders inside `children`.
+ * The app frame: a rounded, frameless window containing the custom title bar, a
+ * scrollable content region, and an optional footer pinned below it.
  *
  * The OS window is transparent (see main.go), so this Box paints the visible
  * surface. A small inset keeps the rounded corners inside the window bounds.
  */
-export default function Layout({ children }: { children: ReactNode }) {
+export default function Layout({
+  children,
+  footer,
+}: {
+  children: ReactNode
+  footer?: ReactNode
+}) {
   return (
     <Box
       sx={{
@@ -45,6 +51,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         >
           {children}
         </Box>
+
+        {footer}
       </Box>
     </Box>
   )
