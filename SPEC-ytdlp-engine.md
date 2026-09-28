@@ -95,6 +95,21 @@ type MediaInfo struct {
 - The write end of the output pipe must be closed in the parent after `Start`,
   or the reader never sees EOF and the job never finishes.
 
+## Output-Path Parsing (learned from real behaviour — do not regress)
+- A merged download prints **two** `[download] Destination:` lines (the separate
+  video and audio streams) and then a differently-shaped merge line:
+  ```
+  [download] Destination: cap.f394.mp4
+  [download] Destination: cap.f251.webm
+  [Merger] Merging formats into "cap.mp4"
+  ```
+  yt-dlp then **deletes the intermediate streams**. The final artefact is only
+  named by the `[Merger]` line, whose shape differs (different verb, quoted
+  path). Parse it with its own regex and let it **override** any earlier
+  `Destination:` path — otherwise a completed merged job reports a deleted
+  intermediate and "open folder" fails. Verified end-to-end: a merged YouTube
+  download reports the final `.mp4`.
+
 ## Testing Strategy
 Go `testing` + a **fake yt-dlp** batch script that replays canned output, so
 tests never hit the network. Table-driven tests for the progress-line parser
