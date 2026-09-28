@@ -1,19 +1,26 @@
 import { screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import App from './App'
 import { renderWithTheme } from './test/renderWithTheme'
+import { installWailsGoMock } from './test/wailsGoMock'
 import { tokens } from './theme/tokens'
 
 describe('App shell', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    installWailsGoMock()
+  })
+
   it('renders the window frame with the title bar', () => {
     renderWithTheme(<App />)
     expect(screen.getByText('Video Downloader')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Tutup' })).toBeInTheDocument()
   })
 
-  it('shows an empty-state message when there are no downloads', () => {
+  it('mounts the download screen with its URL input', () => {
     renderWithTheme(<App />)
-    expect(screen.getByText('Belum ada unduhan.')).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Tautan video' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /unduh/i })).toBeInTheDocument()
   })
 })
 
