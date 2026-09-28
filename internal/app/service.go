@@ -111,6 +111,10 @@ func NewService(deps Deps) *Service {
 		engine:   deps.Engine,
 		openPath: deps.OpenPath,
 		lastEmit: map[string]time.Time{},
+		// Default to a background context so the service is usable before
+		// startup() swaps in the Wails context. A nil context would panic in
+		// exec.CommandContext if a call arrived early.
+		ctx: context.Background(),
 	}
 
 	s.queue = queue.New(queue.Options{

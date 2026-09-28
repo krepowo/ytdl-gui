@@ -531,6 +531,24 @@ func TestEventBridgeMapsChangeTypes(t *testing.T) {
 	}
 }
 
+func TestServiceUsableBeforeStartup(t *testing.T) {
+	// NewService must hand out a usable context: calling a bound method before
+	// startup() swaps in the Wails context must not panic with a nil context
+	// (exec.CommandContext panics on nil). The fake engine ignores ctx, so assert
+	// the field directly - that is what the real engine relies on.
+	h := newHarness(t, settings.Defaults())
+
+	if h.svc.ctx == nil {
+		t.Fatal("Service.ctx is nil before startup(); a real engine call would panic")
+	}
+	if _, err := h.svc.GetSettings(); err != nil {
+		t.Fatalf("GetSettings before startup: %v", err)
+	}
+	if _, err := h.svc.ProbeURL("https://example.com/v"); err != nil {
+		t.Fatalf("ProbeURL before startup: %v", err)
+	}
+}
+
 func TestProgressRoutedToCorrectJob(t *testing.T) {
 	h := newHarness(t, settings.Defaults()) // MaxConcurrent: 2
 

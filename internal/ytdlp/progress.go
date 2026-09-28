@@ -96,14 +96,31 @@ func parseSize(num, unit string) int64 {
 }
 
 // destinationRe matches the artefact path yt-dlp writes. [download] covers plain
-// downloads and [ExtractAudio] covers MP3 conversion; [Merger] is intentionally
-// excluded because its output is quoted differently and is not the final name.
-var destinationRe = regexp.MustCompile(`^\[(?:download|ExtractAudio|ffmpeg|Merger)\]\s+Destination:\s+(.+)$`)
+// downloads and [ExtractAudio] covers MP3 conversion.
+var destinationRe = regexp.MustCompile(`^\[(?:download|ExtractAudio|ffmpeg)\]\s+Destination:\s+(.+)$`)
+
+// mergeRe matches the merge line yt-dlp prints once a separate video+audio
+// download is combined, e.g.:
+//
+//	[Merger] Merging formats into "cap.mp4"
+//
+// This is the FINAL artefact for a merged download; the [download] Destination
+// lines before it point at intermediate streams that yt-dlp then deletes. Its
+// shape differs from a Destination line (different verb, quoted path), so it
+// needs its own pattern.
+var mergeRe = regexp.MustCompile(`^\[Merger\]\s+Merging formats into\s+"(.+)"$`)
 
 // parseDestination extracts the output path from a Destination line, which tells
-// the UI where the finished file landed.
+// the UI where the finished file landed. A merge line wins: it names the final
+// file, whereas the preceding Destination lines name deleted intermediates.
 func parseDestination(line string) (string, bool) {
-	m := destinationRe.FindStringSubmatch(strings.TrimSpace(line))
+	trimmed := strings.TrimSpace(line)
+
+	if m := mergeRe.FindStringSubmatch(trimmed); m != nil {
+		return strings.TrimSpace(m[1]), true
+	}
+
+	m := destinationRe.FindStringSubmatch(trimmed)
 	if m == nil {
 		return "", false
 	}

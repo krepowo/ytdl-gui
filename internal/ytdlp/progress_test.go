@@ -178,6 +178,33 @@ func TestParseProgressDestinationIgnoresOtherLines(t *testing.T) {
 	}
 }
 
+func TestParseProgressDestinationMergeLine(t *testing.T) {
+	// Real merged download output (captured from yt-dlp 2026.08.19):
+	//   [download] Destination: cap.f394.mp4
+	//   [download] Destination: cap.f251.webm
+	//   [Merger] Merging formats into "cap.mp4"
+	// The final artefact is the MERGED file; the earlier Destination lines point
+	// at intermediate streams that yt-dlp deletes. The parser must report the
+	// merged path, or "open folder" on a merged download opens a missing file.
+	got, ok := parseDestination(`[Merger] Merging formats into "cap.mp4"`)
+	if !ok {
+		t.Fatal("ok = false, want true for a [Merger] line")
+	}
+	if got != `cap.mp4` {
+		t.Errorf("path = %q, want %q (quotes must be stripped)", got, `cap.mp4`)
+	}
+}
+
+func TestParseProgressDestinationMergeLineWithSpaces(t *testing.T) {
+	got, ok := parseDestination(`[Merger] Merging formats into "C:\dl\My Video.f137.mp4"`)
+	if !ok {
+		t.Fatal("ok = false, want true")
+	}
+	if got != `C:\dl\My Video.f137.mp4` {
+		t.Errorf("path = %q, want the merged path", got)
+	}
+}
+
 func TestFormatBytesHumanReadable(t *testing.T) {
 	tests := []struct {
 		in   int64
