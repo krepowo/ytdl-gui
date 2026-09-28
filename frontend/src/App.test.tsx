@@ -5,6 +5,13 @@ import { renderWithTheme } from './test/renderWithTheme'
 import { installWailsGoMock } from './test/wailsGoMock'
 import { tokens } from './theme/tokens'
 
+// The queue hook subscribes to Wails events; stub the runtime module.
+vi.mock('./wailsjs/runtime/runtime', () => ({
+  EventsOn: vi.fn(() => () => {}),
+  EventsOff: vi.fn(),
+  EventsEmit: vi.fn(),
+}))
+
 describe('App shell', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -21,6 +28,12 @@ describe('App shell', () => {
     renderWithTheme(<App />)
     expect(screen.getByRole('textbox', { name: 'Tautan video' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /unduh/i })).toBeInTheDocument()
+  })
+
+  it('mounts the queue list with its empty state', async () => {
+    renderWithTheme(<App />)
+    expect(screen.getByText(/antrean download/i)).toBeInTheDocument()
+    expect(await screen.findByText('Belum ada unduhan.')).toBeInTheDocument()
   })
 })
 

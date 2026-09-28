@@ -26,6 +26,9 @@ export default defineConfig({
       '../../wailsjs/runtime/runtime': fileURLToPath(
         new URL('./src/test/wailsRuntimeMock.ts', import.meta.url),
       ),
+      '../../../wailsjs/runtime/runtime': fileURLToPath(
+        new URL('./src/test/wailsRuntimeMock.ts', import.meta.url),
+      ),
     },
   },
 })
