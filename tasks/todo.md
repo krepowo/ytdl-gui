@@ -171,7 +171,7 @@ interface.
 - [ ] Finishing a job promotes the next queued job
 - [ ] Illegal transitions rejected
 
-**Verification:** `go test -race ./internal/queue/...`
+**Verification:** `go test ./internal/queue/...` (deterministic concurrency tests — see plan risk note on `-race`/no gcc)
 **Dependencies:** Task 7
 **Files:** `internal/queue/queue.go`, `internal/queue/job.go`, `internal/queue/queue_test.go`
 

@@ -89,6 +89,7 @@ Vite 8.3, TypeScript 5.x (pinned), Vitest 5.
 
 | Risk | Impact | Mitigation |
 |---|---|---|
+| **No C compiler installed → `go test -race` unavailable** | Low | Verified: no gcc/clang on this machine. `-race` needs cgo. Concurrency tests are written **deterministically** (injected fake engine + a start-barrier channel) to prove `MaxConcurrent` is never exceeded, which is stronger than a probabilistic race check. Install `mingw-winlibs` via scoop if `-race` is later wanted. |
 | MUI v9 + Tailwind v4 preflight/CssBaseline reset conflicts | Med | Import Tailwind first, mount `CssBaseline` after; add `@layer base` overrides only if needed (Task 3). |
 | Process-tree kill unreliable for yt-dlp children (ffmpeg) | High | Use Windows Job Objects (`CREATE_NEW_PROCESS_GROUP` + job) so cancel/quit kills the whole tree (Task 7). |
 | `NtSuspendProcess` pause is fragile | Med | Fallback to kill + `--continue`; keep pause behind an interface (Task 7). |
