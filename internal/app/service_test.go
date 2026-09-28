@@ -531,6 +531,62 @@ func TestEventBridgeMapsChangeTypes(t *testing.T) {
 	}
 }
 
+func TestProgressRoutedToCorrectJob(t *testing.T) {
+	h := newHarness(t, settings.Defaults()) // MaxConcurrent: 2
+
+	idA, err := h.svc.StartDownload(DownloadRequest{URL: "a"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	idB, err := h.svc.StartDownload(DownloadRequest{URL: "b"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if idA == idB {
+		t.Fatalf("expected two distinct job ids, both = %q", idA)
+	}
+	waitFor(t, func() bool { return h.engine.startCount() == 2 }, "both jobs did not start")
+
+	// Two jobs run concurrently; feed different progress to each.
+	h.svc.onProgressFor(idA)(ytdlp.Progress{Percent: 11, TotalBytes: 100})
+	h.svc.onProgressFor(idB)(ytdlp.Progress{Percent: 77, TotalBytes: 200})
+
+	// Each job:updated payload must carry its own id and its own numbers.
+	// Walking every job:updated and keying by id proves no cross-talk.
+	seen := map[string]float64{}
+	for _, e := range h.rec.all() {
+		if e.name != EventJobUpdated {
+			continue
+		}
+		job := e.data[0].(queue.Job)
+		seen[job.ID] = job.Percent
+	}
+	if seen[idA] != 11 {
+		t.Errorf("job A percent = %v, want 11 (progress leaked between jobs?)", seen[idA])
+	}
+	if seen[idB] != 77 {
+		t.Errorf("job B percent = %v, want 77 (progress leaked between jobs?)", seen[idB])
+	}
+
+	// Finishing one job must not disturb the other's state. Which handle maps to
+	// which id depends on scheduler order, so assert order-independently:
+	// exactly one job completes, the other stays non-terminal.
+	h.engine.handle(0).finish(nil)
+	waitFor(t, func() bool {
+		jobs := h.svc.ListJobs()
+		if len(jobs) != 2 {
+			return false
+		}
+		completed := 0
+		for _, j := range jobs {
+			if j.State == queue.StateCompleted {
+				completed++
+			}
+		}
+		return completed == 1
+	}, "finishing one job did not leave exactly one completed and one active")
+}
+
 func TestProgressThrottledPerJob(t *testing.T) {
 	h := newHarness(t, settings.Defaults())
 
