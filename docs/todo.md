@@ -1,7 +1,7 @@
 # Task List: Video Downloader (yt-dlp GUI)
 
 Legend: **S** = 1–2 files, **M** = 3–5 files, **L** = 5–8 files.
-Full context in `tasks/plan.md`; module contracts in `SPEC-*.md`.
+Full context in `plan.md`; module contracts in `SPEC-*.md`.
 
 ---
 

@@ -4,8 +4,9 @@ import { tokens } from '../theme/tokens'
 
 /**
  * A slim strip directly under the title bar, mirroring the reference design's
- * header row. The reference shows a "Tauri + React" chip here; per SPEC-ui-shell
- * (Open Questions) this project ships the same chip reading "Wails + React".
+ * header row. The reference shows a "Tauri + React" chip here; per
+ * docs/SPEC-ui-shell.md (Open Questions) this project ships the same chip
+ * reading "Wails + React".
  *
  * The reference's left-hand hotkey hint is intentionally omitted: no spec defines
  * a global-hotkey overlay window, so there is nothing to advertise yet.
