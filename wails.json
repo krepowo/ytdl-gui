@@ -1,0 +1,20 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "Video Downloader",
+  "outputfilename": "VideoDownloader",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "krepowo",
+    "email": "krepowo@gmail.com"
+  },
+  "info": {
+    "companyName": "krepowo",
+    "productName": "Video Downloader",
+    "productVersion": "0.1.0",
+    "copyright": "Copyright © 2026 krepowo",
+    "comments": "A desktop GUI for yt-dlp. Built with Wails."
+  }
+}

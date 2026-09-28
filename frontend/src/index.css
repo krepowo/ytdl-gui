@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/*
+ * Tailwind v4 is CSS-first: this @theme block IS the config (no tailwind.config.js).
+ * Values mirror src/theme/tokens.ts — that file is the single source of truth for
+ * TypeScript/MUI; keep the two in sync when changing a token.
+ */
+@theme {
+  --color-app-bg: #0a0a0c;
+  --color-window-bg: #121214;
+  --color-surface: #18181b;
+  --color-surface-alt: #1f1f24;
+  --color-titlebar: #232329;
+  --color-border: #27272a;
+  --color-primary: #ef5350;
+  --color-primary-hi: #f87171;
+  --color-success: #34d399;
+  --color-text: #f3f4f6;
+  --color-text-muted: #9ca3af;
+
+  --radius-window: 18px;
+  --radius-control: 12px;
+  --radius-card: 14px;
+
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* Frameless window: the app fills the viewport with no scrollbars. */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: var(--color-app-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
