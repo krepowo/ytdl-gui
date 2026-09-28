@@ -23,8 +23,11 @@ type EngineJob interface {
 
 // Engine starts downloads. It is an interface so the queue can be tested with a
 // fake and so the engine implementation can change without touching the queue.
+//
+// The job's id is passed so the engine adapter can route live progress back to
+// the right job (via Queue.UpdateProgress).
 type Engine interface {
-	Start(req DownloadRequest) (EngineJob, error)
+	Start(jobID string, req DownloadRequest) (EngineJob, error)
 }
 
 // ChangeType classifies a change event for the frontend.
@@ -421,7 +424,7 @@ func (q *Queue) nextQueuedLocked() *Job {
 // run starts the engine job and waits for it. It is the ONLY place a slot is
 // released for a started job, which guarantees exactly-once release.
 func (q *Queue) run(j *Job) {
-	handle, err := q.engine.Start(j.req)
+	handle, err := q.engine.Start(j.ID, j.req)
 	if err != nil {
 		q.settle(j.ID, nil, err)
 		return

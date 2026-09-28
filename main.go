@@ -12,8 +12,12 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+// version is the app version reported to the UI. It is kept in step with
+// wails.json's info.productVersion.
+const version = "0.1.0"
+
 func main() {
-	app := NewApp()
+	app := NewApp(version)
 
 	err := wails.Run(&options.App{
 		Title:     "Video Downloader",

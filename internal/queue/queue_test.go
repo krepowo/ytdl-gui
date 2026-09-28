@@ -94,7 +94,7 @@ type fakeEngine struct {
 	onStart func(*fakeHandle)
 }
 
-func (e *fakeEngine) Start(req DownloadRequest) (EngineJob, error) {
+func (e *fakeEngine) Start(jobID string, req DownloadRequest) (EngineJob, error) {
 	e.mu.Lock()
 	if e.startErr != nil {
 		err := e.startErr
