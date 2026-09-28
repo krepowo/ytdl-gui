@@ -79,6 +79,22 @@ type MediaInfo struct {
 - Pause/Resume use OS process suspension for a true pause; on failure, fall back
   to kill + resume with `--continue` (yt-dlp resumes from a `.part` file).
 
+## Windows Process Control (learned from real behaviour — do not regress)
+- **Onefile yt-dlp is a PyInstaller bootloader**: the `yt-dlp.exe` we ship
+  re-executes itself as a `python.exe` **child**, which is the real downloader.
+  Therefore:
+  - `NtSuspendProcess` on the direct child alone does **not** pause the download
+    (the python.exe child keeps going). Pause must suspend **every process in the
+    Job Object** (`QueryInformationJobObject` + `JobObjectBasicProcessIdList`,
+    then `NtSuspendProcess` each PID). Verified: progress freezes while paused.
+  - Terminate via `TerminateJobObject` (not just `Process.Kill`), and set
+    `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` so closing the job reaps ffmpeg too.
+- A deliberate kill for the pause fallback must be attributed to **that specific
+  child**, or its non-zero exit is misreported as a real failure (race with
+  Resume). Track the expected child, not a shared bool.
+- The write end of the output pipe must be closed in the parent after `Start`,
+  or the reader never sees EOF and the job never finishes.
+
 ## Testing Strategy
 Go `testing` + a **fake yt-dlp** batch script that replays canned output, so
 tests never hit the network. Table-driven tests for the progress-line parser
