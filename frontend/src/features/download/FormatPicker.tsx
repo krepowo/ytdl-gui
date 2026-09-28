@@ -29,6 +29,17 @@ type Props = {
  * combined 360p stream shows one option, while one offering DASH streams shows
  * every resolution (and the engine merges audio when needed).
  */
+/** Renders "label • ext", but drops the ext when the label already mentions it
+ * (which produced "mp4 • mp4" and "mp4 Default, low • mp4"). */
+function optionText(o: FormatOption): string {
+  if (!o.ext) return o.label
+  const label = o.label.toLowerCase()
+  const ext = o.ext.toLowerCase()
+  // Split on non-letters so "mp4" in "mp4 Default, low" still matches.
+  if (label === ext || label.split(/[^a-z0-9]+/).includes(ext)) return o.label
+  return `${o.label} • ${o.ext}`
+}
+
 export default function FormatPicker({ info, onChange }: Props) {
   const hasVideo = info.videoOptions.length > 0
   const hasAudio = info.audioOptions.length > 0
@@ -105,6 +116,10 @@ export default function FormatPicker({ info, onChange }: Props) {
         value={selected?.formatId ?? ''}
         onChange={(e) => setFormatId(e.target.value)}
         aria-label="Kualitas"
+        renderValue={(v) => {
+          const o = options.find((x) => x.formatId === v)
+          return o ? optionText(o) : ''
+        }}
         sx={{
           minWidth: 180,
           borderRadius: `${tokens.radius.control}px`,
@@ -113,8 +128,7 @@ export default function FormatPicker({ info, onChange }: Props) {
       >
         {options.map((o) => (
           <MenuItem key={o.formatId} value={o.formatId}>
-            {o.label}
-            {o.ext ? ` • ${o.ext}` : ''}
+            {optionText(o)}
           </MenuItem>
         ))}
       </Select>

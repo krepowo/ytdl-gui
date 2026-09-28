@@ -26,16 +26,16 @@
 }
 
 /*
- * Frameless window. The OS window is transparent (see main.go); the visible
- * rounded surface is drawn by Layout.tsx, so html/body must stay transparent —
- * otherwise the square OS window corners would show through as opaque blocks.
+ * The window is frameless with DWM-drawn rounded corners (see main.go). The
+ * window is NOT transparent any more, so html/body paint the window colour to
+ * avoid a white flash before React mounts.
  */
 html,
 body,
 #root {
   height: 100%;
   margin: 0;
-  background-color: transparent;
+  background-color: var(--color-window-bg);
 }
 
 body {

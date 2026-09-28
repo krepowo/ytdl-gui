@@ -19,8 +19,6 @@ export const TitleBarRoot = styled(Box)<BoxProps>(({ theme }) => ({
   paddingLeft: theme.spacing(1.5),
   paddingRight: theme.spacing(1),
   backgroundColor: tokens.color.titleBar,
-  borderTopLeftRadius: tokens.radius.window,
-  borderTopRightRadius: tokens.radius.window,
   userSelect: 'none',
   '--wails-draggable': 'drag',
 }))

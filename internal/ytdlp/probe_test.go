@@ -353,6 +353,74 @@ func TestFormatOptionLabelIsHumanReadable(t *testing.T) {
 	}
 }
 
+// noHeightVideoJSON models real YouTube formats where height is null: audio
+// formats 233/234 (audio_ext mp4, no abr) and a video format with video_ext set
+// but no height. Both made the picker render "mp4 • mp4".
+const noHeightVideoJSON = `{
+  "id": "x", "title": "T", "extractor": "generic", "webpage_url": "u",
+  "formats": [
+    {"format_id": "233", "ext": "mp4", "vcodec": "none", "acodec": "none", "video_ext": "none", "audio_ext": "mp4"},
+    {"format_id": "999", "ext": "mp4", "vcodec": "avc1", "acodec": "none", "video_ext": "mp4", "audio_ext": "none", "tbr": 500}
+  ]
+}`
+
+func TestAudioLabelNeverEqualsBareExt(t *testing.T) {
+	info, err := parseProbe([]byte(noHeightVideoJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, o := range info.AudioOptions {
+		if strings.EqualFold(o.Label, o.Ext) {
+			t.Errorf("audio label %q equals its ext %q; picker would show %q", o.Label, o.Ext, o.Label+" • "+o.Ext)
+		}
+	}
+}
+
+func TestVideoLabelNeverEqualsBareExt(t *testing.T) {
+	info, err := parseProbe([]byte(noHeightVideoJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, o := range info.VideoOptions {
+		if strings.EqualFold(o.Label, o.Ext) {
+			t.Errorf("video label %q equals its ext %q; picker would show %q", o.Label, o.Ext, o.Label+" • "+o.Ext)
+		}
+	}
+}
+
+func TestAudioOptionsAlwaysOfferMp3(t *testing.T) {
+	for _, fixture := range []string{youtubeJSON, audioOnlyJSON} {
+		info, err := parseProbe([]byte(fixture))
+		if err != nil {
+			t.Fatal(err)
+		}
+		found := false
+		for _, o := range info.AudioOptions {
+			if strings.EqualFold(o.Ext, "mp3") || strings.Contains(strings.ToUpper(o.Label), "MP3") {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("AudioOptions for fixture lack an MP3 choice: %+v", info.AudioOptions)
+		}
+	}
+}
+
+func TestMp3OptionUsesBestAudio(t *testing.T) {
+	info, err := parseProbe([]byte(youtubeJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The synthetic MP3 option selects bestaudio; MUI's Select needs a non-empty
+	// value, so it is not "" (empty would render a blank control).
+	for _, o := range info.AudioOptions {
+		if strings.EqualFold(o.Ext, "mp3") && o.FormatID != "bestaudio" {
+			t.Errorf("mp3 option FormatID = %q, want %q", o.FormatID, "bestaudio")
+		}
+	}
+}
+
 func TestProbeUsesInjectedRunnerAndPassesExpectedArgs(t *testing.T) {
 	var gotArgs []string
 	run := func(_ context.Context, _ string, args ...string) ([]byte, error) {

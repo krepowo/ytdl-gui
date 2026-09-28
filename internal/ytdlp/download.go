@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -36,6 +38,9 @@ type DownloadOptions struct {
 	CookiesBrowser string
 	// FilenameTemplate overrides the default "%(title)s.%(ext)s" output template.
 	FilenameTemplate string
+	// Title is the media title, used only to detect an existing output file so a
+	// duplicate download gets a "+N" suffix instead of being skipped.
+	Title string
 }
 
 // JobState is the lifecycle state of a download job. The string values are the
@@ -432,11 +437,97 @@ func (j *Job) Cancel() error {
 	return nil
 }
 
+// illegalFilenameRe matches the characters Windows forbids in a filename, plus
+// the control range. yt-dlp's own --windows-filenames handles most of these, but
+// doing it explicitly gives one predictable replacement ("_") for every case.
+var illegalFilenameRe = regexp.MustCompile(`[<>:"/\\|?*\x00-\x1f]`)
+
+// sanitizeForFilename rewrites characters that break a Windows filename to "_".
+func sanitizeForFilename(s string) string {
+	return illegalFilenameRe.ReplaceAllString(s, "_")
+}
+
+// nextAvailableTemplate returns the -o template with a "+N" increment added to
+// the basename when a file with that name already exists.
+//
+// yt-dlp's own behaviour is to SKIP an existing file ("...has already been
+// downloaded"); the user wants a second copy instead. The resolved extension is
+// not known here (it depends on the chosen format and any merge), so the check
+// treats any existing file whose name starts with the stem as a collision.
+func nextAvailableTemplate(dir, template, title string) string {
+	base := template
+	if i := strings.LastIndexAny(template, `/\`); i >= 0 {
+		base = template[i+1:]
+	}
+
+	ext := filepath.Ext(base)
+	stem := strings.TrimSuffix(base, ext)
+	if stem == "" {
+		return template
+	}
+
+	// Resolve the stem to a literal when we can. The default template uses
+	// %(title)s and we know the title, so the common case resolves exactly.
+	if strings.Contains(stem, "%") {
+		if title != "" && stem == "%(title)s" {
+			stem = sanitizeForFilename(title)
+		} else {
+			// A field we cannot resolve: fall back to the literal prefix before
+			// the first field, so a rerun still avoids an obvious collision.
+			prefix := stem
+			if i := strings.Index(stem, "%"); i >= 0 {
+				prefix = stem[:i]
+			}
+			if prefix == "" || !dirHasPrefix(dir, prefix) {
+				return template
+			}
+			stem = strings.TrimSuffix(prefix, ".")
+		}
+	}
+
+	// No collision: keep the template untouched.
+	if !dirHasPrefix(dir, stem) {
+		return template
+	}
+
+	// Find the first free "+N" name.
+	for n := 1; n < 10000; n++ {
+		candidate := fmt.Sprintf("%s+%d", stem, n)
+		if !dirHasPrefix(dir, candidate) {
+			return filepath.Join(filepath.Dir(template), candidate+ext)
+		}
+	}
+	return template
+}
+
+// dirHasPrefix reports whether any file in dir starts with prefix (ignoring
+// case, as Windows does).
+func dirHasPrefix(dir, prefix string) bool {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return false
+	}
+	lower := strings.ToLower(prefix)
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		if strings.HasPrefix(strings.ToLower(e.Name()), lower) {
+			return true
+		}
+	}
+	return false
+}
+
 // buildArgs translates options into the yt-dlp argv. Arguments are always a
 // slice (never a shell string) so user input cannot be interpreted by a shell.
 func buildArgs(opts DownloadOptions, bins Bins) []string {
 	args := []string{"--newline", "--no-warnings", "--no-playlist", "--progress"}
 	args = append(args, "--ffmpeg-location", bins.Dir())
+
+	// Keep filenames Windows-safe and turn forbidden characters into "_".
+	args = append(args, "--windows-filenames")
+	args = append(args, "--replace-in-metadata", "title", `[<>:"/\\|?*\x00-\x1f]`, "_")
 
 	if opts.CookiesBrowser != "" {
 		args = append(args, "--cookies-from-browser", opts.CookiesBrowser)
@@ -468,6 +559,7 @@ func buildArgs(opts DownloadOptions, bins Bins) []string {
 	if template == "" {
 		template = "%(title)s.%(ext)s"
 	}
+	template = nextAvailableTemplate(opts.OutputDir, template, opts.Title)
 	args = append(args, "-o", filepath.Join(opts.OutputDir, template))
 	args = append(args, opts.URL)
 	return args

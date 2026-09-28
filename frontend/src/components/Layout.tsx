@@ -5,11 +5,12 @@ import HeaderStrip from './HeaderStrip'
 import { tokens } from '../theme/tokens'
 
 /**
- * The app frame: a rounded, frameless window containing the custom title bar, a
+ * The app frame: a frameless window containing the custom title bar, a
  * scrollable content region, and an optional footer pinned below it.
  *
- * The OS window is transparent (see main.go), so this Box paints the visible
- * surface. A small inset keeps the rounded corners inside the window bounds.
+ * On Windows 11 the DWM draws the rounded corners and the drop shadow (see
+ * main.go), so this box paints only the flat dark surface — no CSS radius and no
+ * inset, which would otherwise leave a light fringe against DWM's corner.
  */
 export default function Layout({
   children,
@@ -22,41 +23,32 @@ export default function Layout({
     <Box
       sx={{
         height: '100vh',
-        padding: '6px',
-        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: tokens.color.windowBg,
+        overflow: 'hidden',
       }}
     >
+      <TitleBar />
+
+      <HeaderStrip />
+
       <Box
+        component="main"
         sx={{
-          height: '100%',
+          flexGrow: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          padding: `${tokens.space.page}px`,
           display: 'flex',
           flexDirection: 'column',
-          bgcolor: tokens.color.windowBg,
-          borderRadius: `${tokens.radius.window}px`,
-          overflow: 'hidden',
+          gap: `${tokens.space.gap}px`,
         }}
       >
-        <TitleBar />
-
-        <HeaderStrip />
-
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            minHeight: 0,
-            overflowY: 'auto',
-            padding: `${tokens.space.page}px`,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: `${tokens.space.gap}px`,
-          }}
-        >
-          {children}
-        </Box>
-
-        {footer}
+        {children}
       </Box>
+
+      {footer}
     </Box>
   )
 }

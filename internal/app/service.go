@@ -144,12 +144,14 @@ func (s *Service) Start(jobID string, req queue.DownloadRequest) (queue.EngineJo
 	onProgress := s.onProgressFor(jobID)
 
 	handle, err := s.engine.Start(s.ctx, ytdlp.DownloadOptions{
-		URL:            req.URL,
-		OutputDir:      req.OutputDir,
-		Mode:           ytdlp.Mode(req.Mode),
-		FormatID:       req.FormatID,
-		NeedsMerge:     req.NeedsMerge,
-		CookiesBrowser: req.CookiesBrowser,
+		URL:              req.URL,
+		OutputDir:        req.OutputDir,
+		Mode:             ytdlp.Mode(req.Mode),
+		FormatID:         req.FormatID,
+		NeedsMerge:       req.NeedsMerge,
+		CookiesBrowser:   req.CookiesBrowser,
+		FilenameTemplate: req.FilenameTemplate,
+		Title:            req.Title,
 	}, onProgress, nil)
 	if err != nil {
 		return nil, err
@@ -272,13 +274,14 @@ func (s *Service) StartDownload(req DownloadRequest) (string, error) {
 	}
 
 	job, err := s.queue.Add(queue.DownloadRequest{
-		URL:            req.URL,
-		OutputDir:      cfg.DownloadDir,
-		Mode:           mode,
-		FormatID:       req.FormatID,
-		NeedsMerge:     req.NeedsMerge,
-		CookiesBrowser: cfg.CookiesBrowser,
-		Title:          req.Title,
+		URL:              req.URL,
+		OutputDir:        cfg.DownloadDir,
+		Mode:             mode,
+		FormatID:         req.FormatID,
+		NeedsMerge:       req.NeedsMerge,
+		CookiesBrowser:   cfg.CookiesBrowser,
+		FilenameTemplate: cfg.FilenameTmpl,
+		Title:            req.Title,
 	})
 	if err != nil {
 		return "", err

@@ -269,15 +269,16 @@ func buildVideoOptions(formats []probeFormat, separateAudio bool) []FormatOption
 }
 
 // videoLabel builds a human label such as "1080p60". When no resolution is known
-// (direct media), it falls back to the format note or container so the picker
-// still shows something meaningful.
+// (direct media, or a format whose height is null), it falls back to the format
+// note, then a generic word with the container — never the bare container, which
+// the picker would render as "mp4 • mp4".
 func videoLabel(f probeFormat, height int) string {
 	if height <= 0 {
 		if f.FormatNote != "" {
 			return f.FormatNote
 		}
 		if f.Ext != "" {
-			return f.Ext
+			return fmt.Sprintf("video (%s)", f.Ext)
 		}
 		return "video"
 	}
@@ -288,7 +289,11 @@ func videoLabel(f probeFormat, height int) string {
 	return label
 }
 
-// buildAudioOptions derives audio-only options, highest bitrate first.
+// buildAudioOptions derives audio-only options, highest bitrate first, plus a
+// synthetic MP3 choice that the engine converts with ffmpeg.
+//
+// The MP3 option carries an empty FormatID on purpose: the engine then passes
+// -f bestaudio/best, so it works even when the site offers no audio-only stream.
 func buildAudioOptions(formats []probeFormat) []FormatOption {
 	var out []FormatOption
 
@@ -306,10 +311,32 @@ func buildAudioOptions(formats []probeFormat) []FormatOption {
 	}
 
 	sort.SliceStable(out, func(i, j int) bool { return out[i].Bitrate > out[j].Bitrate })
-	return out
+
+	// Collapse duplicates: real sites list the same stream twice (e.g. an "140"
+	// and an "140-drc" both render as "m4a 129kbps"). Keep the first of each
+	// label so the picker shows one entry per real choice.
+	deduped := out[:0]
+	seen := map[string]bool{}
+	for _, o := range out {
+		key := strings.ToLower(o.Label)
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		deduped = append(deduped, o)
+	}
+	out = deduped
+
+	// Always offer MP3, first, so it is the obvious audio choice. The FormatID is
+	// the yt-dlp selector "bestaudio" (not empty) because MUI's Select treats an
+	// empty value as "nothing selected" and would render a blank control.
+	mp3 := FormatOption{FormatID: "bestaudio", Label: "MP3 (konversi)", Ext: "mp3"}
+	return append([]FormatOption{mp3}, out...)
 }
 
-// audioLabel builds a label such as "mp3 128kbps".
+// audioLabel builds a label such as "m4a 128kbps". When no bitrate is known the
+// container alone is not enough (the picker appends the ext, producing
+// "mp4 • mp4"), so a generic word is used instead.
 func audioLabel(f probeFormat) string {
 	ext := f.Ext
 	if ext == "" {
@@ -318,7 +345,11 @@ func audioLabel(f probeFormat) string {
 	if f.ABR > 0 {
 		return fmt.Sprintf("%s %dkbps", ext, int(f.ABR))
 	}
-	return ext
+	if f.FormatNote != "" {
+		return fmt.Sprintf("%s %s", ext, f.FormatNote)
+	}
+	// No bitrate and no note: "audio (mp4)" reads better than a bare "mp4".
+	return fmt.Sprintf("audio (%s)", ext)
 }
 
 // effectiveFilesize prefers the exact size and falls back to yt-dlp's estimate.

@@ -45,13 +45,14 @@ func canTransition(from, to State) bool {
 // DownloadRequest is the immutable input that starts a job. It is kept off the
 // wire format (the UI already knows what it asked for).
 type DownloadRequest struct {
-	URL            string
-	OutputDir      string
-	Mode           string // "video" | "audio"
-	FormatID       string
-	NeedsMerge     bool
-	CookiesBrowser string
-	Title          string
+	URL              string
+	OutputDir        string
+	Mode             string // "video" | "audio"
+	FormatID         string
+	NeedsMerge       bool
+	CookiesBrowser   string
+	FilenameTemplate string
+	Title            string
 }
 
 // Job is one download task and its live status. The JSON tags define the wire

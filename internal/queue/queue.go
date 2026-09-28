@@ -353,11 +353,12 @@ func (q *Queue) Restore() error {
 		// Rehydrate runtime fields that are not persisted (the request), so a
 		// restored job can be retried/resumed coherently.
 		j.req = DownloadRequest{
-			URL:       j.URL,
-			Mode:      j.Mode,
-			FormatID:  j.FormatID,
-			Title:     j.Title,
-			OutputDir: "",
+			URL:              j.URL,
+			Mode:             j.Mode,
+			FormatID:         j.FormatID,
+			Title:            j.Title,
+			OutputDir:        "",
+			FilenameTemplate: "",
 		}
 		stored := j
 		q.jobs = append(q.jobs, &stored)

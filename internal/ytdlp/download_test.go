@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"io"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -338,6 +340,82 @@ func TestBuildArgsCustomTemplate(t *testing.T) {
 
 	if !containsSubslice(args, "-o", `D:\D\%(id)s.%(ext)s`) {
 		t.Errorf("args = %v, want the custom template honoured", args)
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Filename safety: illegal characters and duplicates
+// ---------------------------------------------------------------------------
+
+func TestBuildArgsSanitizesIllegalFilenameChars(t *testing.T) {
+	args := buildArgs(DownloadOptions{URL: "u", OutputDir: `D:\D`, Mode: ModeVideo}, testBins())
+
+	// yt-dlp must rewrite characters Windows forbids in a filename.
+	joined := strings.Join(args, " ")
+	if !strings.Contains(joined, "--replace-in-metadata") {
+		t.Fatalf("args = %v, want --replace-in-metadata to sanitize the title", args)
+	}
+	if !containsSubslice(args, "--windows-filenames") {
+		t.Errorf("args = %v, want --windows-filenames for Windows-safe output", args)
+	}
+}
+
+func TestBuildArgsSanitizeReplacesWithUnderscore(t *testing.T) {
+	args := buildArgs(DownloadOptions{URL: "u", OutputDir: `D:\D`, Mode: ModeVideo}, testBins())
+
+	// Find the replace-in-metadata triple and confirm the replacement is "_".
+	for i := 0; i+3 < len(args); i++ {
+		if args[i] == "--replace-in-metadata" && args[i+1] == "title" {
+			if args[i+3] != "_" {
+				t.Errorf("replacement = %q, want %q", args[i+3], "_")
+			}
+			return
+		}
+	}
+	t.Errorf("args = %v, no --replace-in-metadata title <regex> _ triple found", args)
+}
+
+func TestBuildArgsIncrementsDuplicateOutputName(t *testing.T) {
+	dir := t.TempDir()
+	// A file already occupying the natural output name.
+	if err := os.WriteFile(filepath.Join(dir, "clip.mp4"), []byte("x"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	// A literal base template whose .%(ext)s resolves to the existing name.
+	opts := DownloadOptions{URL: "u", OutputDir: dir, Mode: ModeVideo, FilenameTemplate: "clip.%(ext)s"}
+	args := buildArgs(opts, testBins())
+
+	out := ""
+	for i := 0; i+1 < len(args); i++ {
+		if args[i] == "-o" {
+			out = args[i+1]
+		}
+	}
+	if out == "" {
+		t.Fatalf("args = %v, no -o template found", args)
+	}
+	// The output must no longer collide with the existing file.
+	if strings.HasSuffix(out, "clip.%(ext)s") {
+		t.Errorf("-o = %q, want a suffixed name so it does not overwrite the existing clip", out)
+	}
+	if !strings.Contains(out, "clip+1") && !strings.Contains(out, "clip (1)") {
+		t.Errorf("-o = %q, want an increment marker (clip+1 or clip (1))", out)
+	}
+}
+
+func TestBuildArgsNoIncrementWhenFree(t *testing.T) {
+	dir := t.TempDir()
+	opts := DownloadOptions{URL: "u", OutputDir: dir, Mode: ModeVideo, FilenameTemplate: "clip.%(ext)s"}
+	args := buildArgs(opts, testBins())
+
+	out := ""
+	for i := 0; i+1 < len(args); i++ {
+		if args[i] == "-o" {
+			out = args[i+1]
+		}
+	}
+	if !strings.HasSuffix(out, "clip.%(ext)s") {
+		t.Errorf("-o = %q, want the plain name when no duplicate exists", out)
 	}
 }
 

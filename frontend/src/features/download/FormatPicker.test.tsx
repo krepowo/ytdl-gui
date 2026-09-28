@@ -116,4 +116,53 @@ describe('FormatPicker', () => {
     renderWithTheme(<FormatPicker info={info({ isLive: true })} onChange={vi.fn()} />)
     expect(screen.getByText(/live/i)).toBeInTheDocument()
   })
+
+  it('never renders a duplicated "ext • ext" label', async () => {
+    const user = userEvent.setup()
+    renderWithTheme(
+      <FormatPicker
+        info={info({
+          // A label that already equals its ext is the "mp4 • mp4" bug.
+          videoOptions: [opt({ formatId: 'v1', label: 'mp4', ext: 'mp4', height: 0 })],
+        })}
+        onChange={vi.fn()}
+      />,
+    )
+
+    const combo = screen.getByRole('combobox')
+    expect(combo).not.toHaveTextContent('mp4 • mp4')
+    await user.click(combo)
+    expect(screen.queryByText('mp4 • mp4')).not.toBeInTheDocument()
+  })
+
+  it('does not repeat the ext when the label already mentions it', async () => {
+    const user = userEvent.setup()
+    renderWithTheme(
+      <FormatPicker
+        info={info({
+          // "mp4 Default, low" must not become "mp4 Default, low • mp4".
+          audioOptions: [opt({ formatId: 'a1', label: 'mp4 Default, low', ext: 'mp4' })],
+        })}
+        onChange={vi.fn()}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /audio/i }))
+    expect(screen.queryByText(/Default, low • mp4/)).not.toBeInTheDocument()
+  })
+
+  it('shows the MP3 choice in audio mode', async () => {
+    const user = userEvent.setup()
+    renderWithTheme(
+      <FormatPicker
+        info={info({
+          audioOptions: [opt({ formatId: 'bestaudio', label: 'MP3 (konversi)', ext: 'mp3' })],
+        })}
+        onChange={vi.fn()}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /audio/i }))
+    expect(screen.getByRole('combobox')).toHaveTextContent('MP3')
+  })
 })
