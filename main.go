@@ -16,20 +16,22 @@ func main() {
 	app := NewApp()
 
 	err := wails.Run(&options.App{
-		Title:  "Video Downloader",
-		Width:  720,
-		Height: 640,
+		Title:     "Video Downloader",
+		Width:     720,
+		Height:    640,
 		MinWidth:  640,
 		MinHeight: 520,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		// Frameless window: we draw our own dark title bar (Task 3).
+		// Frameless + transparent so our own rounded, dark window chrome shows
+		// through (matching the reference design). The rounded corners are drawn
+		// in CSS by Layout.tsx.
 		Frameless:        true,
-		BackgroundColour: &options.RGBA{R: 18, G: 18, B: 20, A: 1},
+		BackgroundColour: &options.RGBA{R: 0, G: 0, B: 0, A: 0},
 		Windows: &windows.Options{
-			WebviewIsTransparent: false,
-			WindowIsTranslucent:  false,
+			WebviewIsTransparent: true,
+			WindowIsTranslucent:  true,
 		},
 		OnStartup: app.startup,
 		Bind: []interface{}{

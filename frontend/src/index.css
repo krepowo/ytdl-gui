@@ -25,16 +25,20 @@
   --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
-/* Frameless window: the app fills the viewport with no scrollbars. */
+/*
+ * Frameless window. The OS window is transparent (see main.go); the visible
+ * rounded surface is drawn by Layout.tsx, so html/body must stay transparent —
+ * otherwise the square OS window corners would show through as opaque blocks.
+ */
 html,
 body,
 #root {
   height: 100%;
   margin: 0;
+  background-color: transparent;
 }
 
 body {
-  background-color: var(--color-app-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
   overflow: hidden;

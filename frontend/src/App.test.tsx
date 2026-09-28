@@ -1,22 +1,19 @@
-import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from '@mui/material/styles'
+import { screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import App from './App'
-import { muiTheme } from './theme/muiTheme'
+import { renderWithTheme } from './test/renderWithTheme'
 import { tokens } from './theme/tokens'
 
-function renderApp() {
-  return render(
-    <ThemeProvider theme={muiTheme}>
-      <App />
-    </ThemeProvider>,
-  )
-}
-
 describe('App shell', () => {
-  it('renders the app name', () => {
-    renderApp()
-    expect(screen.getByText('ytdl-gui')).toBeInTheDocument()
+  it('renders the window frame with the title bar', () => {
+    renderWithTheme(<App />)
+    expect(screen.getByText('Video Downloader')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Tutup' })).toBeInTheDocument()
+  })
+
+  it('shows an empty-state message when there are no downloads', () => {
+    renderWithTheme(<App />)
+    expect(screen.getByText('Belum ada unduhan.')).toBeInTheDocument()
   })
 })
 
