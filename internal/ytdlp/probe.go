@@ -330,7 +330,7 @@ func buildAudioOptions(formats []probeFormat) []FormatOption {
 	// Always offer MP3, first, so it is the obvious audio choice. The FormatID is
 	// the yt-dlp selector "bestaudio" (not empty) because MUI's Select treats an
 	// empty value as "nothing selected" and would render a blank control.
-	mp3 := FormatOption{FormatID: "bestaudio", Label: "MP3 (konversi)", Ext: "mp3"}
+	mp3 := FormatOption{FormatID: "bestaudio", Label: "MP3 (converted)", Ext: "mp3"}
 	return append([]FormatOption{mp3}, out...)
 }
 

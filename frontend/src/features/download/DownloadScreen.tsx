@@ -107,7 +107,7 @@ export default function DownloadScreen() {
               variant="contained"
               onClick={handleEnqueue}
               disabled={enqueuing || !selection}
-              aria-label="Tambah ke antrean"
+              aria-label="Add to queue"
               startIcon={<AddToQueueIcon fontSize="small" />}
               sx={{
                 borderRadius: `${tokens.radius.control}px`,
@@ -116,7 +116,7 @@ export default function DownloadScreen() {
                 '&:hover': { bgcolor: tokens.color.primaryHi },
               }}
             >
-              Tambah ke antrean
+              Add to queue
             </Button>
           </Box>
         </Box>

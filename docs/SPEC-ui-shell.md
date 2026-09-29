@@ -122,3 +122,6 @@ resolves to `#ef5350`; assert every interactive icon button has an
 - **Resolved:** TypeScript pinned to **5.x** (decided; not 7.x).
 - **Resolved:** the reference's "Tauri + React" header chip is **omitted entirely** at the
   user's request — no stack chip is rendered.
+- **Resolved:** the UI is **English only**. All user-visible copy, tooltips, `aria-label`s
+  and the HTML `lang` attribute use English; the earlier Indonesian strings were removed.
+  No i18n framework is introduced — strings stay inline literals.

@@ -233,7 +233,7 @@ format picker (video/audio toggle + quality dropdown).
 ---
 
 ### Task 12: Queue list — items, progress, actions  [M]
-**Description:** "Antrean Download" header with `N antrean • M sedang diunduh`;
+**Description:** "Download Queue" header with `N queued • M downloading`;
 `QueueItem` with status icon, title, status line, `LinearProgress`, and icon
 actions (pause/resume/cancel/open/retry).
 

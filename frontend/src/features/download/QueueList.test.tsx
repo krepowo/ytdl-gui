@@ -36,14 +36,14 @@ const actions = {
 describe('QueueList', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('shows the "Antrean Download" header', () => {
+  it('shows the "Download Queue" header', () => {
     renderWithTheme(<QueueList jobs={[]} {...actions} />)
-    expect(screen.getByText(/antrean download/i)).toBeInTheDocument()
+    expect(screen.getByText(/download queue/i)).toBeInTheDocument()
   })
 
   it('shows an empty state when there are no jobs', () => {
     renderWithTheme(<QueueList jobs={[]} {...actions} />)
-    expect(screen.getByText('Belum ada unduhan.')).toBeInTheDocument()
+    expect(screen.getByText('No downloads yet.')).toBeInTheDocument()
   })
 
   it('shows the queued and downloading counts in the header', () => {
@@ -59,9 +59,9 @@ describe('QueueList', () => {
       />,
     )
 
-    // "2 antrean • 1 sedang diunduh"
-    expect(screen.getByText(/2 antrean/)).toBeInTheDocument()
-    expect(screen.getByText(/1 sedang diunduh/)).toBeInTheDocument()
+    // "2 queued • 1 downloading"
+    expect(screen.getByText(/2 queued/)).toBeInTheDocument()
+    expect(screen.getByText(/1 downloading/)).toBeInTheDocument()
   })
 
   it('renders one item per job', () => {
@@ -78,6 +78,6 @@ describe('QueueList', () => {
 
   it('does not show the empty state when jobs exist', () => {
     renderWithTheme(<QueueList jobs={[job({ id: 'a' })]} {...actions} />)
-    expect(screen.queryByText('Belum ada unduhan.')).not.toBeInTheDocument()
+    expect(screen.queryByText('No downloads yet.')).not.toBeInTheDocument()
   })
 })

@@ -16,7 +16,7 @@ describe('DirPicker', () => {
 
   it('shows the current directory value', () => {
     renderWithTheme(<DirPicker value={'D:\\Media'} onChange={vi.fn()} />)
-    expect(screen.getByRole('textbox', { name: 'Folder unduhan' })).toHaveValue('D:\\Media')
+    expect(screen.getByRole('textbox', { name: 'Download folder' })).toHaveValue('D:\\Media')
   })
 
   it('calls PickDownloadDir and reports the chosen folder', async () => {
@@ -25,7 +25,7 @@ describe('DirPicker', () => {
     const user = userEvent.setup()
 
     renderWithTheme(<DirPicker value={'D:\\Media'} onChange={onChange} />)
-    await user.click(screen.getByRole('button', { name: /pilih folder/i }))
+    await user.click(screen.getByRole('button', { name: /choose folder/i }))
 
     expect(mocks.PickDownloadDir).toHaveBeenCalledTimes(1)
     expect(onChange).toHaveBeenCalledWith('E:\\New Folder')
@@ -37,7 +37,7 @@ describe('DirPicker', () => {
     const user = userEvent.setup()
 
     renderWithTheme(<DirPicker value={'D:\\Media'} onChange={onChange} />)
-    await user.click(screen.getByRole('button', { name: /pilih folder/i }))
+    await user.click(screen.getByRole('button', { name: /choose folder/i }))
 
     expect(onChange).not.toHaveBeenCalled()
   })

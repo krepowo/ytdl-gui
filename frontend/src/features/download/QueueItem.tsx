@@ -62,21 +62,21 @@ const statusMeta: Record<JobState, { icon: ReactNode; color: string; showBar: bo
   },
 }
 
-/** The human status line, e.g. "Mengunduh • 42.0 MB / 100.0 MB • 42.3%". */
+/** The human status line, e.g. "Downloading • 42.0 MB / 100.0 MB • 42.3%". */
 export function statusLine(job: Job): string {
   switch (job.state) {
     case 'queued':
-      return 'Menunggu'
+      return 'Queued'
     case 'paused':
-      return `Dijeda • ${clampPercent(job.percent).toFixed(1)}%`
+      return `Paused • ${clampPercent(job.percent).toFixed(1)}%`
     case 'completed':
-      return 'Selesai'
+      return 'Completed'
     case 'canceled':
-      return 'Dibatalkan'
+      return 'Canceled'
     case 'error':
-      return job.error || 'Gagal'
+      return job.error || 'Failed'
     case 'downloading': {
-      const parts = ['Mengunduh']
+      const parts = ['Downloading']
       if (job.totalBytes > 0) {
         parts.push(`${formatBytes(job.downloadedBytes)} / ${formatBytes(job.totalBytes)}`)
       } else if (job.downloadedBytes > 0) {
@@ -149,7 +149,7 @@ export default function QueueItem({
           <LinearProgress
             variant="determinate"
             value={clampPercent(job.percent)}
-            aria-label="Progres unduhan"
+            aria-label="Download progress"
             sx={{
               mt: 1,
               height: 6,
@@ -163,48 +163,48 @@ export default function QueueItem({
 
       <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0 }}>
         {job.state === 'downloading' && (
-          <Tooltip title="Jeda">
-            <IconButton size="small" aria-label="Jeda" onClick={() => onPause(job.id)}>
+          <Tooltip title="Pause">
+            <IconButton size="small" aria-label="Pause" onClick={() => onPause(job.id)}>
               <PauseIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         )}
 
         {job.state === 'paused' && (
-          <Tooltip title="Lanjutkan">
-            <IconButton size="small" aria-label="Lanjutkan" onClick={() => onResume(job.id)}>
+          <Tooltip title="Resume">
+            <IconButton size="small" aria-label="Resume" onClick={() => onResume(job.id)}>
               <PlayArrowIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         )}
 
         {(job.state === 'downloading' || job.state === 'paused' || job.state === 'queued') && (
-          <Tooltip title="Batalkan">
-            <IconButton size="small" aria-label="Batalkan" onClick={() => onCancel(job.id)}>
+          <Tooltip title="Cancel">
+            <IconButton size="small" aria-label="Cancel" onClick={() => onCancel(job.id)}>
               <CloseIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         )}
 
         {job.state === 'completed' && (
-          <Tooltip title="Buka">
-            <IconButton size="small" aria-label="Buka" onClick={() => onOpen(job.outputPath)}>
+          <Tooltip title="Open">
+            <IconButton size="small" aria-label="Open" onClick={() => onOpen(job.outputPath)}>
               <FolderOpenIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         )}
 
         {job.state === 'error' && (
-          <Tooltip title="Coba lagi">
-            <IconButton size="small" aria-label="Coba lagi" onClick={() => onRetry(job.id)}>
+          <Tooltip title="Retry">
+            <IconButton size="small" aria-label="Retry" onClick={() => onRetry(job.id)}>
               <RefreshIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         )}
 
         {(job.state === 'completed' || job.state === 'error' || job.state === 'canceled') && (
-          <Tooltip title="Hapus">
-            <IconButton size="small" aria-label="Hapus" onClick={() => onRemove(job.id)}>
+          <Tooltip title="Remove">
+            <IconButton size="small" aria-label="Remove" onClick={() => onRemove(job.id)}>
               <DeleteIcon fontSize="small" />
             </IconButton>
           </Tooltip>

@@ -33,10 +33,10 @@ export default function ConfigPathNote() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
       <Typography variant="caption" sx={{ color: tokens.color.textMuted, wordBreak: 'break-all' }}>
-        File konfigurasi: {info.configPath}
+        Config file: {info.configPath}
       </Typography>
       <Typography variant="caption" sx={{ color: tokens.color.textMuted }}>
-        Versi {info.version} • yt-dlp {info.ytDlpVersion} • ffmpeg {info.ffmpegVersion}
+        Version {info.version} • yt-dlp {info.ytDlpVersion} • ffmpeg {info.ffmpegVersion}
       </Typography>
     </Box>
   )

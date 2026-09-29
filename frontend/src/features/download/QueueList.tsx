@@ -16,7 +16,7 @@ type Props = {
 }
 
 /**
- * The "Antrean Download" section: a header with live counts and the list of
+ * The "Download Queue" section: a header with live counts and the list of
  * download items. The counts come from the passed-in jobs, so they update the
  * moment an event changes a job's state.
  */
@@ -36,11 +36,11 @@ export default function QueueList({
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
       <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5 }}>
         <Typography variant="subtitle2" sx={{ color: tokens.color.text, fontWeight: 600 }}>
-          Antrean Download
+          Download Queue
         </Typography>
         {jobs.length > 0 && (
           <Typography variant="caption" sx={{ color: tokens.color.textMuted }}>
-            {queued} antrean • {downloading} sedang diunduh
+            {queued} queued • {downloading} downloading
           </Typography>
         )}
       </Box>
@@ -55,7 +55,7 @@ export default function QueueList({
           }}
         >
           <Typography variant="body2" sx={{ color: tokens.color.textMuted }}>
-            Belum ada unduhan.
+            No downloads yet.
           </Typography>
         </Box>
       ) : (

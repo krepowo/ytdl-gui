@@ -40,20 +40,20 @@ describe('SettingsScreen', () => {
   it('loads settings into the form', async () => {
     renderWithTheme(<SettingsScreen onClose={vi.fn()} />)
 
-    expect(await screen.findByRole('textbox', { name: 'Folder unduhan' })).toHaveValue('D:\\Downloads')
+    expect(await screen.findByRole('textbox', { name: 'Download folder' })).toHaveValue('D:\\Downloads')
   })
 
   it('shows the max-concurrency control with the loaded value', async () => {
     renderWithTheme(<SettingsScreen onClose={vi.fn()} />)
 
-    const concurrency = await screen.findByRole('combobox', { name: /unduhan bersamaan/i })
+    const concurrency = await screen.findByRole('combobox', { name: /concurrent downloads/i })
     expect(concurrency).toHaveTextContent('2')
   })
 
   it('persists a concurrency change via SaveSettings (debounced)', async () => {
     renderWithTheme(<SettingsScreen onClose={vi.fn()} />)
 
-    const concurrency = await screen.findByRole('combobox', { name: /unduhan bersamaan/i })
+    const concurrency = await screen.findByRole('combobox', { name: /concurrent downloads/i })
     expect(concurrency).toHaveTextContent('2')
 
     fireEvent.mouseDown(concurrency)
@@ -72,7 +72,7 @@ describe('SettingsScreen', () => {
     // The control is a fixed 1-8 list, so an out-of-range value cannot be
     // selected. Assert the option set to prove the boundary.
     renderWithTheme(<SettingsScreen onClose={vi.fn()} />)
-    const concurrency = await screen.findByRole('combobox', { name: /unduhan bersamaan/i })
+    const concurrency = await screen.findByRole('combobox', { name: /concurrent downloads/i })
 
     fireEvent.mouseDown(concurrency)
     expect(await screen.findByRole('option', { name: '1' })).toBeInTheDocument()
@@ -85,12 +85,12 @@ describe('SettingsScreen', () => {
     mocks.PickDownloadDir.mockResolvedValue('E:\\Media')
     const user = userEvent.setup()
     renderWithTheme(<SettingsScreen onClose={vi.fn()} />)
-    await screen.findByRole('textbox', { name: 'Folder unduhan' })
+    await screen.findByRole('textbox', { name: 'Download folder' })
 
-    await user.click(screen.getByRole('button', { name: /pilih folder/i }))
+    await user.click(screen.getByRole('button', { name: /choose folder/i }))
 
     await waitFor(() =>
-      expect(screen.getByRole('textbox', { name: 'Folder unduhan' })).toHaveValue('E:\\Media'),
+      expect(screen.getByRole('textbox', { name: 'Download folder' })).toHaveValue('E:\\Media'),
     )
   })
 
@@ -103,9 +103,9 @@ describe('SettingsScreen', () => {
     const onClose = vi.fn()
     const user = userEvent.setup()
     renderWithTheme(<SettingsScreen onClose={onClose} />)
-    await screen.findByRole('textbox', { name: 'Folder unduhan' })
+    await screen.findByRole('textbox', { name: 'Download folder' })
 
-    await user.click(screen.getByRole('button', { name: /tutup pengaturan/i }))
+    await user.click(screen.getByRole('button', { name: /close settings/i }))
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 })

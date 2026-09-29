@@ -87,7 +87,7 @@ export default function SettingsScreen({ onClose }: Props) {
     return (
       <Box sx={{ p: 2 }}>
         <Typography variant="body2" sx={{ color: tokens.color.textMuted }}>
-          Memuat pengaturan…
+          Loading settings…
         </Typography>
       </Box>
     )
@@ -97,31 +97,31 @@ export default function SettingsScreen({ onClose }: Props) {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography variant="subtitle1" sx={{ color: tokens.color.text, fontWeight: 600, flexGrow: 1 }}>
-          Pengaturan
+          Settings
         </Typography>
-        <Tooltip title="Tutup pengaturan">
-          <IconButton aria-label="Tutup pengaturan" onClick={onClose} size="small">
+        <Tooltip title="Close settings">
+          <IconButton aria-label="Close settings" onClick={onClose} size="small">
             <CloseIcon fontSize="small" />
           </IconButton>
         </Tooltip>
       </Box>
 
       {error && <Alert severity="error">{error}</Alert>}
-      {saved && !error && <Alert severity="success">Pengaturan disimpan.</Alert>}
+      {saved && !error && <Alert severity="success">Settings saved.</Alert>}
 
       <Box>
         <Typography variant="caption" sx={{ color: tokens.color.textMuted, display: 'block', mb: 0.5 }}>
-          Folder unduhan
+          Download folder
         </Typography>
         <DirPicker value={form.downloadDir} onChange={(dir) => update({ downloadDir: dir })} />
       </Box>
 
       <Box sx={{ display: 'flex', gap: 2 }}>
         <FormControl size="small" sx={{ minWidth: 180 }}>
-          <InputLabel id="concurrency-label">Unduhan bersamaan</InputLabel>
+          <InputLabel id="concurrency-label">Concurrent downloads</InputLabel>
           <Select
             labelId="concurrency-label"
-            label="Unduhan bersamaan"
+            label="Concurrent downloads"
             value={form.maxConcurrent}
             onChange={(e) => update({ maxConcurrent: Number(e.target.value) })}
             sx={{ borderRadius: `${tokens.radius.control}px` }}
@@ -135,10 +135,10 @@ export default function SettingsScreen({ onClose }: Props) {
         </FormControl>
 
         <FormControl size="small" sx={{ minWidth: 160 }}>
-          <InputLabel id="mode-label">Mode default</InputLabel>
+          <InputLabel id="mode-label">Default mode</InputLabel>
           <Select
             labelId="mode-label"
-            label="Mode default"
+            label="Default mode"
             value={form.defaultMode}
             onChange={(e) => update({ defaultMode: e.target.value })}
             sx={{ borderRadius: `${tokens.radius.control}px` }}
@@ -151,27 +151,27 @@ export default function SettingsScreen({ onClose }: Props) {
 
       <TextField
         size="small"
-        label="Template nama file"
+        label="Filename template"
         value={form.filenameTemplate}
         onChange={(e) => update({ filenameTemplate: e.target.value })}
-        slotProps={{ htmlInput: { 'aria-label': 'Template nama file' } }}
+        slotProps={{ htmlInput: { 'aria-label': 'Filename template' } }}
         sx={{
           '& .MuiOutlinedInput-root': { borderRadius: `${tokens.radius.control}px` },
         }}
       />
 
       <FormControl size="small" fullWidth>
-        <InputLabel id="cookies-label">Cookie dari browser</InputLabel>
+        <InputLabel id="cookies-label">Cookies from browser</InputLabel>
         <Select
           labelId="cookies-label"
-          label="Cookie dari browser"
+          label="Cookies from browser"
           value={form.cookiesBrowser}
           onChange={(e) => update({ cookiesBrowser: e.target.value })}
           sx={{ borderRadius: `${tokens.radius.control}px` }}
         >
           {COOKIE_BROWSERS.map((b) => (
             <MenuItem key={b || 'none'} value={b}>
-              {b ? b.charAt(0).toUpperCase() + b.slice(1) : 'Tidak ada'}
+              {b ? b.charAt(0).toUpperCase() + b.slice(1) : 'None'}
             </MenuItem>
           ))}
         </Select>

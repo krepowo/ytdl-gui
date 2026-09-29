@@ -79,17 +79,17 @@ export default function StorageBar({ onOpenSettings }: Props) {
         }}
       >
         {dir}
-        {free !== null ? ` • ${formatBytes(free)} tersedia` : ''}
+        {free !== null ? ` • ${formatBytes(free)} available` : ''}
       </Typography>
 
-      <Tooltip title="Buka folder">
-        <IconButton size="small" aria-label="Buka folder" onClick={() => api.openDownloadDir()}>
+      <Tooltip title="Open folder">
+        <IconButton size="small" aria-label="Open folder" onClick={() => api.openDownloadDir()}>
           <FolderOpenIcon fontSize="small" />
         </IconButton>
       </Tooltip>
 
-      <Tooltip title="Pengaturan">
-        <IconButton size="small" aria-label="Pengaturan" onClick={onOpenSettings}>
+      <Tooltip title="Settings">
+        <IconButton size="small" aria-label="Settings" onClick={onOpenSettings}>
           <SettingsIcon fontSize="small" />
         </IconButton>
       </Tooltip>

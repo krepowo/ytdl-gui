@@ -58,7 +58,7 @@ func NewApp(version string) *App {
 		},
 		PickDir: func() (string, error) {
 			return wruntime.OpenDirectoryDialog(a.ctx, wruntime.OpenDialogOptions{
-				Title: "Pilih folder unduhan",
+				Title: "Choose download folder",
 			})
 		},
 		OpenPath: openInShell,

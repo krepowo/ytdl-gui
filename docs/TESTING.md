@@ -28,17 +28,17 @@ Options:
 **What to try:**
 
 1. Paste any video URL (YouTube, X/Twitter, Vimeo, a direct `.mp4` link…) into
-   the field and press the **Unduh** button. The app probes it first, then shows
+   the field and press the **Download** button. The app probes it first, then shows
    the title, a source badge, and a format picker.
 2. Pick a quality (or switch to **Audio/MP3**) and start the download. The item
-   appears in **Antrean Download** and its progress bar advances live.
+   appears in the **Download Queue** and its progress bar advances live.
 3. Exercise the per-item icons: **pause** → **resume**, **cancel**, and on
    completion **open folder** (folder icon).
-4. Open **Pengaturan** (gear, bottom-right) to change the download folder,
+4. Open **Settings** (gear, bottom-right) to change the download folder,
    concurrency (1–8), default mode, and the filename template. Settings save
    automatically; the config-file path is shown at the bottom.
 5. Confirm the config file location: it lives in the install folder, shown in
-   **Pengaturan** as "File konfigurasi". If that folder is read-only it falls
+   **Settings** as "Config file". If that folder is read-only it falls
    back to `%APPDATA%`.
 
 ## 2. Automated tests (fast, no network)

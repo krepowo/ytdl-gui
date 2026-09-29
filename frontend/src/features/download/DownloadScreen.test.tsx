@@ -40,7 +40,7 @@ describe('DownloadScreen', () => {
     renderWithTheme(<DownloadScreen />)
 
     await user.type(screen.getByRole('textbox'), 'https://x.com/v')
-    await user.click(screen.getByRole('button', { name: /unduh/i }))
+    await user.click(screen.getByRole('button', { name: /download/i }))
 
     await waitFor(() => expect(screen.getByText('Probed Video')).toBeInTheDocument())
     expect(screen.getByText(/twitter/i)).toBeInTheDocument()
@@ -53,7 +53,7 @@ describe('DownloadScreen', () => {
     renderWithTheme(<DownloadScreen />)
 
     await user.type(screen.getByRole('textbox'), 'https://bad.example/x')
-    await user.click(screen.getByRole('button', { name: /unduh/i }))
+    await user.click(screen.getByRole('button', { name: /download/i }))
 
     await waitFor(() => expect(screen.getByText(/unsupported url/i)).toBeInTheDocument())
   })
@@ -64,11 +64,11 @@ describe('DownloadScreen', () => {
     renderWithTheme(<DownloadScreen />)
 
     await user.type(screen.getByRole('textbox'), 'https://x.com/v')
-    await user.click(screen.getByRole('button', { name: /unduh/i }))
+    await user.click(screen.getByRole('button', { name: /download/i }))
     await waitFor(() => expect(screen.getByText('Probed Video')).toBeInTheDocument())
 
     // With the summary shown, the action becomes "add to queue".
-    await user.click(screen.getByRole('button', { name: /tambah ke antrean/i }))
+    await user.click(screen.getByRole('button', { name: /add to queue/i }))
 
     await waitFor(() => expect(mocks.StartDownload).toHaveBeenCalledTimes(1))
     const req = mocks.StartDownload.mock.calls[0][0]
@@ -83,7 +83,7 @@ describe('DownloadScreen', () => {
     renderWithTheme(<DownloadScreen />)
 
     await user.type(screen.getByRole('textbox'), 'https://x.com/v')
-    await user.click(screen.getByRole('button', { name: /unduh/i }))
+    await user.click(screen.getByRole('button', { name: /download/i }))
 
     expect(mocks.StartDownload).not.toHaveBeenCalled()
   })

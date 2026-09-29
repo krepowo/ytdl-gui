@@ -42,7 +42,7 @@ describe('StorageBar', () => {
     renderWithTheme(<StorageBar onOpenSettings={vi.fn()} />)
     await waitFor(() => expect(mocks.GetSettings).toHaveBeenCalled())
 
-    await user.click(screen.getByRole('button', { name: /buka folder/i }))
+    await user.click(screen.getByRole('button', { name: /open folder/i }))
     expect(mocks.OpenDownloadDir).toHaveBeenCalledTimes(1)
   })
 
@@ -52,7 +52,7 @@ describe('StorageBar', () => {
     renderWithTheme(<StorageBar onOpenSettings={onOpenSettings} />)
     await waitFor(() => expect(mocks.GetSettings).toHaveBeenCalled())
 
-    await user.click(screen.getByRole('button', { name: /pengaturan/i }))
+    await user.click(screen.getByRole('button', { name: /settings/i }))
     expect(onOpenSettings).toHaveBeenCalledTimes(1)
   })
 

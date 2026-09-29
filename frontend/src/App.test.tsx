@@ -22,30 +22,30 @@ describe('App shell', () => {
   it('renders the window frame with the title bar', () => {
     renderWithTheme(<App />)
     expect(screen.getByText('Video Downloader')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Tutup' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
   })
 
   it('mounts the download screen with its URL input', () => {
     renderWithTheme(<App />)
-    expect(screen.getByRole('textbox', { name: 'Tautan video' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /unduh/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Video URL' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /download/i })).toBeInTheDocument()
   })
 
   it('mounts the queue list with its empty state', async () => {
     renderWithTheme(<App />)
-    expect(screen.getByText(/antrean download/i)).toBeInTheDocument()
-    expect(await screen.findByText('Belum ada unduhan.')).toBeInTheDocument()
+    expect(screen.getByText(/download queue/i)).toBeInTheDocument()
+    expect(await screen.findByText('No downloads yet.')).toBeInTheDocument()
   })
 
   it('opens the settings dialog from the storage bar', async () => {
     const user = userEvent.setup()
     renderWithTheme(<App />)
-    await screen.findByRole('button', { name: 'Pengaturan' })
+    await screen.findByRole('button', { name: 'Settings' })
 
-    await user.click(screen.getByRole('button', { name: 'Pengaturan' }))
+    await user.click(screen.getByRole('button', { name: 'Settings' }))
 
-    expect(await screen.findByText('Pengaturan')).toBeInTheDocument()
-    expect(await screen.findByRole('textbox', { name: 'Folder unduhan' })).toBeInTheDocument()
+    expect(await screen.findByText('Settings')).toBeInTheDocument()
+    expect(await screen.findByRole('textbox', { name: 'Download folder' })).toBeInTheDocument()
   })
 })
 

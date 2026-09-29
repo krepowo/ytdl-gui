@@ -3,7 +3,7 @@
 ## Objective
 The main screen: paste a URL **from any supported site**, pick quality/format,
 hit Download, and watch the queue. Mirrors the reference design — URL input +
-Download button, then an "Antrean Download" list with per-item status, progress,
+Download button, then a "Download Queue" list with per-item status, progress,
 and controls. Icon-first throughout.
 
 ## Tech Stack
@@ -22,7 +22,7 @@ frontend/src/features/download/
   UrlInput.tsx           → label + input (link icon) + Download button
   MediaSummary.tsx       → post-probe: thumbnail, title, source badge, duration
   FormatPicker.tsx       → video/audio toggle + dynamic quality dropdown
-  QueueList.tsx          → header ("Antrean Download") + summary count
+  QueueList.tsx          → header ("Download Queue") + summary count
   QueueItem.tsx          → status icon, title, status line, progress bar, actions
   useDownloadQueue.ts    → subscribes to job:* events, calls bound methods
   StorageBar.tsx         → footer: path + free space + icon actions
@@ -52,7 +52,7 @@ const status = {
 }[job.state];
 ```
 - All colors via theme/tokens; no inline hex.
-- Status line format: `Mengunduh • 42.3 MB / 128 MB • 33%`.
+- Status line format: `Downloading • 42.3 MB / 128 MB • 33%`.
 - Progress via MUI `LinearProgress` with coral fill.
 - Actions are **icon buttons with tooltips** (pause/resume/cancel/open/retry).
 
@@ -76,7 +76,7 @@ errors; a non-YouTube extractor shows the right source badge. Mock the Wails bin
 - [ ] Progress bar advances live from events (no polling).
 - [ ] Pause/resume/cancel work from the item's action icon and update state.
 - [ ] Completed item shows green check + "open folder" action; failed item shows error + retry.
-- [ ] Queue header shows `N antrean • M sedang diunduh`.
+- [ ] Queue header shows `N queued • M downloading`.
 - [ ] Missing optional metadata (thumbnail/duration) degrades gracefully.
 
 ## Open Questions

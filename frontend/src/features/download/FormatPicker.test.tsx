@@ -156,7 +156,7 @@ describe('FormatPicker', () => {
     renderWithTheme(
       <FormatPicker
         info={info({
-          audioOptions: [opt({ formatId: 'bestaudio', label: 'MP3 (konversi)', ext: 'mp3' })],
+          audioOptions: [opt({ formatId: 'bestaudio', label: 'MP3 (converted)', ext: 'mp3' })],
         })}
         onChange={vi.fn()}
       />,

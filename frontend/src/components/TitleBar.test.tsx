@@ -17,26 +17,26 @@ describe('TitleBar', () => {
 
   it('gives every icon-only control an accessible label', () => {
     renderWithTheme(<TitleBar />)
-    for (const label of ['Minimalkan', 'Maksimalkan', 'Tutup']) {
+    for (const label of ['Minimize', 'Maximize', 'Close']) {
       expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
     }
   })
 
   it('minimises the window', async () => {
     renderWithTheme(<TitleBar />)
-    await userEvent.click(screen.getByRole('button', { name: 'Minimalkan' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Minimize' }))
     expect(WindowMinimise).toHaveBeenCalledTimes(1)
   })
 
   it('toggles maximise', async () => {
     renderWithTheme(<TitleBar />)
-    await userEvent.click(screen.getByRole('button', { name: 'Maksimalkan' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Maximize' }))
     expect(WindowToggleMaximise).toHaveBeenCalledTimes(1)
   })
 
   it('quits the app', async () => {
     renderWithTheme(<TitleBar />)
-    await userEvent.click(screen.getByRole('button', { name: 'Tutup' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }))
     expect(Quit).toHaveBeenCalledTimes(1)
   })
 })

@@ -86,7 +86,7 @@ export default function FormatPicker({ info, onChange }: Props) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Typography variant="caption" sx={{ color: tokens.color.textMuted }}>
-          Siaran langsung — kualitas dipilih otomatis (LIVE)
+          Live stream — quality is chosen automatically (LIVE)
         </Typography>
       </Box>
     )
@@ -99,7 +99,7 @@ export default function FormatPicker({ info, onChange }: Props) {
         exclusive
         value={mode}
         onChange={handleModeChange}
-        aria-label="Mode unduhan"
+        aria-label="Download mode"
       >
         <ToggleButton value={MODE_VIDEO} disabled={!hasVideo} aria-label="Video">
           <VideocamIcon fontSize="small" sx={{ mr: 0.5 }} />
@@ -115,7 +115,7 @@ export default function FormatPicker({ info, onChange }: Props) {
         size="small"
         value={selected?.formatId ?? ''}
         onChange={(e) => setFormatId(e.target.value)}
-        aria-label="Kualitas"
+        aria-label="Quality"
         renderValue={(v) => {
           const o = options.find((x) => x.formatId === v)
           return o ? optionText(o) : ''

@@ -30,7 +30,7 @@ export default function DirPicker({ value, onChange }: Props) {
         fullWidth
         size="small"
         value={value}
-        slotProps={{ htmlInput: { readOnly: true, 'aria-label': 'Folder unduhan' } }}
+        slotProps={{ htmlInput: { readOnly: true, 'aria-label': 'Download folder' } }}
         sx={{
           '& .MuiOutlinedInput-root': {
             borderRadius: `${tokens.radius.control}px`,
@@ -38,9 +38,9 @@ export default function DirPicker({ value, onChange }: Props) {
           },
         }}
       />
-      <Tooltip title="Pilih folder">
+      <Tooltip title="Choose folder">
         <IconButton
-          aria-label="Pilih folder"
+          aria-label="Choose folder"
           onClick={handlePick}
           sx={{ color: tokens.color.textMuted }}
         >

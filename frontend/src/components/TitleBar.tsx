@@ -38,21 +38,21 @@ export default function TitleBar() {
 
       <Box sx={{ flexGrow: 1 }} />
 
-      <Tooltip title="Minimalkan">
-        <WindowControl aria-label="Minimalkan" onClick={() => WindowMinimise()}>
+      <Tooltip title="Minimize">
+        <WindowControl aria-label="Minimize" onClick={() => WindowMinimise()}>
           <RemoveIcon sx={{ fontSize: 16 }} />
         </WindowControl>
       </Tooltip>
 
-      <Tooltip title="Maksimalkan">
-        <WindowControl aria-label="Maksimalkan" onClick={() => WindowToggleMaximise()}>
+      <Tooltip title="Maximize">
+        <WindowControl aria-label="Maximize" onClick={() => WindowToggleMaximise()}>
           <CropSquareIcon sx={{ fontSize: 14 }} />
         </WindowControl>
       </Tooltip>
 
-      <Tooltip title="Tutup">
+      <Tooltip title="Close">
         <WindowControl
-          aria-label="Tutup"
+          aria-label="Close"
           onClick={() => Quit()}
           sx={{
             '&:hover': {

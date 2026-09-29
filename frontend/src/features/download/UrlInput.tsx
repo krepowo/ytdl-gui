@@ -54,7 +54,7 @@ export default function UrlInput({ value, onChange, onDownload, probing = false 
         onKeyDown={(e) => {
           if (e.key === 'Enter') handleSubmit()
         }}
-        placeholder="Tempel tautan video dari situs apa pun…"
+        placeholder="Paste a video link from any site…"
         sx={{
           '& .MuiOutlinedInput-root': {
             borderRadius: `${tokens.radius.control}px`,
@@ -62,7 +62,7 @@ export default function UrlInput({ value, onChange, onDownload, probing = false 
           },
         }}
         slotProps={{
-          htmlInput: { 'aria-label': 'Tautan video' },
+          htmlInput: { 'aria-label': 'Video URL' },
           input: {
             startAdornment: (
               <InputAdornment position="start">
@@ -71,10 +71,10 @@ export default function UrlInput({ value, onChange, onDownload, probing = false 
             ),
             endAdornment: (
               <InputAdornment position="end">
-                <Tooltip title={pasteError ? 'Tempel gagal — izinkan akses papan klip' : 'Tempel dari papan klip'}>
+                <Tooltip title={pasteError ? 'Paste failed — allow clipboard access' : 'Paste from clipboard'}>
                   <IconButton
                     size="small"
-                    aria-label="Tempel dari papan klip"
+                    aria-label="Paste from clipboard"
                     onClick={handlePaste}
                   >
                     <ContentPasteIcon fontSize="small" />
@@ -90,7 +90,7 @@ export default function UrlInput({ value, onChange, onDownload, probing = false 
         variant="contained"
         onClick={handleSubmit}
         disabled={!canDownload}
-        aria-label="Unduh"
+        aria-label="Download"
         startIcon={
           probing ? (
             <CircularProgress size={16} color="inherit" />
@@ -108,7 +108,7 @@ export default function UrlInput({ value, onChange, onDownload, probing = false 
           '&:hover': { bgcolor: tokens.color.primaryHi },
         }}
       >
-        Unduh
+        Download
       </Button>
     </Box>
   )

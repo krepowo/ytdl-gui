@@ -70,7 +70,7 @@ describe('QueueItem', () => {
     const user = userEvent.setup()
     renderWithTheme(<QueueItem job={job('downloading')} {...noop} onPause={onPause} />)
 
-    await user.click(screen.getByRole('button', { name: /jeda/i }))
+    await user.click(screen.getByRole('button', { name: /pause/i }))
     expect(onPause).toHaveBeenCalledTimes(1)
   })
 
@@ -79,7 +79,7 @@ describe('QueueItem', () => {
     const user = userEvent.setup()
     renderWithTheme(<QueueItem job={job('paused', { percent: 10 })} {...noop} onResume={onResume} />)
 
-    await user.click(screen.getByRole('button', { name: /lanjutkan/i }))
+    await user.click(screen.getByRole('button', { name: /resume/i }))
     expect(onResume).toHaveBeenCalledTimes(1)
   })
 
@@ -88,7 +88,7 @@ describe('QueueItem', () => {
     const user = userEvent.setup()
     renderWithTheme(<QueueItem job={job('queued')} {...noop} onCancel={onCancel} />)
 
-    await user.click(screen.getByRole('button', { name: /batalkan/i }))
+    await user.click(screen.getByRole('button', { name: /cancel/i }))
     expect(onCancel).toHaveBeenCalledTimes(1)
   })
 
@@ -99,14 +99,14 @@ describe('QueueItem', () => {
       <QueueItem job={job('completed', { percent: 100, outputPath: 'D:\\D\\clip.mp4' })} {...noop} onOpen={onOpen} />,
     )
 
-    await user.click(screen.getByRole('button', { name: /buka/i }))
+    await user.click(screen.getByRole('button', { name: /open/i }))
     expect(onOpen).toHaveBeenCalledWith('D:\\D\\clip.mp4')
   })
 
   it('offers a retry action when failed and shows the error', () => {
     renderWithTheme(<QueueItem job={job('error', { error: 'network down' })} {...noop} />)
 
-    expect(screen.getByRole('button', { name: /coba lagi/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument()
     expect(screen.getByText(/network down/i)).toBeInTheDocument()
   })
 
@@ -115,15 +115,15 @@ describe('QueueItem', () => {
     const user = userEvent.setup()
     renderWithTheme(<QueueItem job={job('completed', { percent: 100 })} {...noop} onRemove={onRemove} />)
 
-    await user.click(screen.getByRole('button', { name: /hapus/i }))
+    await user.click(screen.getByRole('button', { name: /remove/i }))
     expect(onRemove).toHaveBeenCalledTimes(1)
   })
 
   it('shows no pause/cancel action for a canceled job', () => {
     renderWithTheme(<QueueItem job={job('canceled')} {...noop} />)
 
-    expect(screen.queryByRole('button', { name: /jeda/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /batalkan/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /pause/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument()
   })
 
   it('gives every icon action an accessible label', () => {

@@ -12,13 +12,13 @@ describe('UrlInput', () => {
   it('disables the Download button while the URL is empty', () => {
     renderWithTheme(<UrlInput value="" onChange={vi.fn()} onDownload={vi.fn()} />)
 
-    expect(screen.getByRole('button', { name: /unduh/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /download/i })).toBeDisabled()
   })
 
   it('disables the Download button when the URL is only whitespace', () => {
     renderWithTheme(<UrlInput value="   " onChange={vi.fn()} onDownload={vi.fn()} />)
 
-    expect(screen.getByRole('button', { name: /unduh/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /download/i })).toBeDisabled()
   })
 
   it('enables the Download button for a non-YouTube URL', () => {
@@ -26,7 +26,7 @@ describe('UrlInput', () => {
       <UrlInput value="https://vimeo.com/12345" onChange={vi.fn()} onDownload={vi.fn()} />,
     )
 
-    expect(screen.getByRole('button', { name: /unduh/i })).toBeEnabled()
+    expect(screen.getByRole('button', { name: /download/i })).toBeEnabled()
   })
 
   it('calls onChange as the user types', async () => {
@@ -46,7 +46,7 @@ describe('UrlInput', () => {
       <UrlInput value="https://example.com/v" onChange={vi.fn()} onDownload={onDownload} />,
     )
 
-    await user.click(screen.getByRole('button', { name: /unduh/i }))
+    await user.click(screen.getByRole('button', { name: /download/i }))
 
     expect(onDownload).toHaveBeenCalledTimes(1)
   })
@@ -62,7 +62,7 @@ describe('UrlInput', () => {
     )
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /unduh/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /download/i })).toBeDisabled()
   })
 
   it('submits on Enter so the flow is keyboard reachable', async () => {
