@@ -34,6 +34,12 @@ Unicode true
 ####
 !include "wails_tools.nsh"
 
+# LZMA solid compression. The Wails template sets no compressor, so NSIS would
+# default to zlib and the installer would be ~200 MB instead of ~70 MB. This must
+# appear before the first Section.
+SetCompressor /SOLID lzma
+SetCompressorDictSize 64
+
 # The version information for this two must consist of 4 parts
 VIProductVersion "${INFO_PRODUCTVERSION}.0"
 VIFileVersion    "${INFO_PRODUCTVERSION}.0"
@@ -96,6 +102,13 @@ Section
 
     !insertmacro wails.files
 
+    # Bundle the yt-dlp + ffmpeg binaries next to the app exe. Wails' wails.files
+    # macro only embeds the application exe, so these are added explicitly.
+    # Paths are relative to build/windows/installer/.
+    File "..\..\..\resources\yt-dlp.exe"
+    File "..\..\..\resources\ffmpeg.exe"
+    File "..\..\..\resources\ffprobe.exe"
+
     CreateShortcut "$SMPROGRAMS\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
     CreateShortCut "$DESKTOP\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
 
@@ -109,6 +122,11 @@ Section "uninstall"
     !insertmacro wails.setShellContext
 
     RMDir /r "$AppData\${PRODUCT_EXECUTABLE}" # Remove the WebView2 DataPath
+
+    # Remove app state explicitly so the intent is clear even if the folder
+    # removal below is ever narrowed. Downloaded media is never touched.
+    Delete "$INSTDIR\config.json"
+    Delete "$INSTDIR\history.json"
 
     RMDir /r $INSTDIR
 

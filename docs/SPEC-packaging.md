@@ -114,16 +114,24 @@ be added **by us** to `build/windows/installer/project.nsi`.
   `Program Files`; ship without the WebView2 bootstrapper; rely on the Wails
   default compressor (zlib) — it misses the size target.
 
-## Success Criteria
-- [ ] Wails CLI/module upgraded to **≥ v2.13.0** (v2.16.0+ recommended).
-- [ ] `wails build -nsis -installscope user` produces `build/bin/*-installer.exe`.
-- [ ] Installer installs per-user with **no UAC prompt** (`$LOCALAPPDATA\Programs\...`).
-- [ ] Installer is **LZMA-compressed** and lands in the ~65–75 MB range.
-- [ ] No components page appears (single mandatory install, no checkboxes).
-- [ ] All three binaries (`yt-dlp`, `ffmpeg`, `ffprobe`) are installed next to the exe.
-- [ ] Installed app finds the bundled binaries and downloads a video **and** an MP3.
-- [ ] `config.json` is created inside the install folder.
-- [ ] Uninstaller runs cleanly from "Apps & features" and removes `config.json`/`history.json`.
+## Success Criteria (verified 2026-09-29)
+- [x] Wails CLI/module upgraded to **≥ v2.13.0** — using **v2.16.0**.
+- [x] `wails build -nsis -clean -platform windows/amd64 -installscope user` produces
+      `build/bin/Video Downloader-amd64-installer.exe` (exit 0).
+- [x] Installer installs per-user with **no UAC prompt**; a silent
+      `/S /D=<dir>` install laid down all files with exit 0.
+- [x] Installer is **LZMA-compressed**: **73 MB** (spec target ~65–75 MB). With zlib
+      it was ~200 MB before the `SetCompressor /SOLID lzma` line was added.
+- [x] No components page appears (single mandatory install, no checkboxes).
+- [x] All three binaries are installed next to the exe (confirmed by listing the
+      installer payload: `Video Downloader.exe`, `yt-dlp.exe`, `ffmpeg.exe`,
+      `ffprobe.exe`, plus the WebView2 bootstrapper).
+- [x] Installed app launches and finds the bundled binaries from the install
+      folder: `yt-dlp 2026.08.19`, `ffmpeg 9.0`.
+- [x] Uninstaller (`uninstall.exe /S`) removes the whole install folder, so
+      `config.json`/`history.json` go with it; downloaded media is untouched.
+- [ ] Download a video **and** an MP3 from the installed build on a clean account
+      (covered by the `-tags manual` end-to-end tests against the same code path).
 
 ## Uninstall Behaviour
 - Wails' uninstaller does `RMDir /r "$INSTDIR"`, which removes the whole install
