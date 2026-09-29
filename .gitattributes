@@ -1,0 +1,35 @@
+# Normalise line endings in the repository.
+#
+# Most of this project is Windows-targeted, but the repo is worked on from
+# Git Bash too, so text files are stored with LF and checked out with the
+# platform default. Batch/PowerShell files keep CRLF, which is what their
+# interpreters expect.
+
+* text=auto
+
+*.go      text eol=lf
+*.ts      text eol=lf
+*.tsx     text eol=lf
+*.js      text eol=lf
+*.jsx     text eol=lf
+*.json    text eol=lf
+*.md      text eol=lf
+*.css     text eol=lf
+*.html    text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.sh      text eol=lf
+*.mod     text eol=lf
+*.sum     text eol=lf
+
+*.ps1     text eol=crlf
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+*.nsi     text eol=crlf
+*.nsh     text eol=crlf
+
+# Binary assets must never be line-ending converted.
+*.png     binary
+*.ico     binary
+*.icns    binary
+*.exe     binary
