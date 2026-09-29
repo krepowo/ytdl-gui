@@ -31,11 +31,6 @@ describe('App shell', () => {
     expect(screen.getByRole('button', { name: /unduh/i })).toBeInTheDocument()
   })
 
-  it('shows the "Wails + React" header chip (reference chip, rebranded)', () => {
-    renderWithTheme(<App />)
-    expect(screen.getByText('Wails + React')).toBeInTheDocument()
-  })
-
   it('mounts the queue list with its empty state', async () => {
     renderWithTheme(<App />)
     expect(screen.getByText(/antrean download/i)).toBeInTheDocument()

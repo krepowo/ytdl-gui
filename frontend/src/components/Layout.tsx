@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import Box from '@mui/material/Box'
 import TitleBar from './TitleBar'
-import HeaderStrip from './HeaderStrip'
 import { tokens } from '../theme/tokens'
 
 /**
@@ -30,8 +29,6 @@ export default function Layout({
       }}
     >
       <TitleBar />
-
-      <HeaderStrip />
 
       <Box
         component="main"

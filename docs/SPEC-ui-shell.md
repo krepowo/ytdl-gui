@@ -119,5 +119,6 @@ resolves to `#ef5350`; assert every interactive icon button has an
 - [ ] `npm run typecheck` and `npm run lint` pass clean.
 
 ## Open Questions
-- Reference shows a "Tauri + React" chip — we replace it with **"Wails + React"**.
 - **Resolved:** TypeScript pinned to **5.x** (decided; not 7.x).
+- **Resolved:** the reference's "Tauri + React" header chip is **omitted entirely** at the
+  user's request — no stack chip is rendered.
